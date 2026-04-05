@@ -33,94 +33,95 @@ function TransactionModal({ tx, categories, onSave, onCancel, theme }) {
 
   const field = (err) => ({ background: c.bg700, borderColor: err ? '#ef4444' : c.bg500, color: c.text })
 
-  const lbl = { color: c.textDim, fontSize: 13, fontWeight: 600, marginBottom: 6, display: 'block' }
-  const err = (msg) => msg ? <p style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{msg}</p> : null
-
-  const typeButtons = (
-    <div style={{ display: 'flex', gap: 10 }}>
-      {[{ id: 'expense', label: 'Despesa', icon: ArrowDownRight, color: '#ef4444' }, { id: 'income', label: 'Receita', icon: ArrowUpRight, color: '#22c55e' }].map(t => {
-        const TIcon = t.icon; const active = form.type === t.id
-        return (
-          <button key={t.id} onClick={() => setForm(f => ({ ...f, type: t.id }))}
-            style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              padding: '14px 12px', borderRadius: 14, fontSize: 15, fontWeight: 600,
-              background: active ? t.color + '15' : c.bg800,
-              border: `1.5px solid ${active ? t.color + '60' : c.bg600}`,
-              color: active ? t.color : c.textMuted,
-            }}>
-            <TIcon size={18} /> {t.label}
-          </button>
-        )
-      })}
-    </div>
-  )
-
-  const formFields = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {typeButtons}
-      <div>
-        <span style={lbl}>Data</span>
-        <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-          style={{ ...field(errors.date) }} />
-        {err(errors.date)}
-      </div>
-      <div>
-        <span style={lbl}>Descrição</span>
-        <input type="text" value={form.description} maxLength={200}
-          onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-          placeholder="Ex: Supermercado, Uber, Netflix..." style={field(errors.description)} />
-        {err(errors.description)}
-      </div>
-      <div>
-        <span style={lbl}>Valor (R$)</span>
-        <input type="number" value={form.amount} min="0" step="0.01"
-          onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-          placeholder="0,00" style={field(errors.amount)} />
-        {err(errors.amount)}
-      </div>
-      <div>
-        <span style={lbl}>Categoria</span>
-        <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-          style={{ background: c.bg700, borderColor: c.bg500, color: c.text }}>
-          {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-        </select>
-      </div>
-    </div>
-  )
+  const lbl = { color: c.textDim, fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }
+  const errEl = (msg) => msg ? <p style={{ color: '#ef4444', fontSize: 11, marginTop: 2 }}>{msg}</p> : null
+  const inputPad = { padding: '12px 14px', fontSize: 16 }
 
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100,
       background: c.bg900, color: c.text,
-      overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+      display: 'flex', flexDirection: 'column',
     }}>
-      <div style={{ padding: '16px 20px 40px', paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
-          <h3 style={{ fontSize: 20, fontWeight: 700 }}>{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
-          <button onClick={onCancel} style={{
-            width: 40, height: 40, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: c.bg700, color: c.textMuted, border: 'none',
-          }}><X size={20} /></button>
+      {/* Header */}
+      <div style={{ padding: '12px 20px', paddingTop: 'max(12px, env(safe-area-inset-top))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
+        <button onClick={onCancel} style={{
+          width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: c.bg700, color: c.textMuted, border: 'none',
+        }}><X size={18} /></button>
+      </div>
+
+      {/* Scrollable form */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 20px', WebkitOverflowScrolling: 'touch' }}>
+        {/* Type toggle */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          {[{ id: 'expense', label: 'Despesa', icon: ArrowDownRight, color: '#ef4444' }, { id: 'income', label: 'Receita', icon: ArrowUpRight, color: '#22c55e' }].map(t => {
+            const TIcon = t.icon; const active = form.type === t.id
+            return (
+              <button key={t.id} onClick={() => setForm(f => ({ ...f, type: t.id }))}
+                style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '12px', borderRadius: 12, fontSize: 14, fontWeight: 600,
+                  background: active ? t.color + '15' : c.bg800,
+                  border: `1.5px solid ${active ? t.color + '60' : c.bg600}`,
+                  color: active ? t.color : c.textMuted,
+                }}>
+                <TIcon size={16} /> {t.label}
+              </button>
+            )
+          })}
         </div>
 
-        {formFields}
-
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
-          <button onClick={handleSave} style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            padding: '16px', borderRadius: 14, fontSize: 16, fontWeight: 700,
-            background: c.accent, color: '#fff', border: 'none',
-          }}>
-            {isEdit ? <><Pencil size={18} /> Salvar</> : <><Plus size={18} /> Adicionar</>}
-          </button>
-          <button onClick={onCancel} style={{
-            padding: '16px 20px', borderRadius: 14, fontSize: 16, fontWeight: 600,
-            background: c.bg800, color: c.textMuted, border: `1.5px solid ${c.bg600}`,
-          }}>Cancelar</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <span style={lbl}>Data</span>
+            <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+              style={{ ...field(errors.date), ...inputPad }} />
+            {errEl(errors.date)}
+          </div>
+          <div>
+            <span style={lbl}>Descrição</span>
+            <input type="text" value={form.description} maxLength={200}
+              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              placeholder="Ex: Supermercado, Uber, Netflix..." style={{ ...field(errors.description), ...inputPad }} />
+            {errEl(errors.description)}
+          </div>
+          <div>
+            <span style={lbl}>Valor (R$)</span>
+            <input type="number" value={form.amount} min="0" step="0.01"
+              onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+              placeholder="0,00" style={{ ...field(errors.amount), ...inputPad }} />
+            {errEl(errors.amount)}
+          </div>
+          <div>
+            <span style={lbl}>Categoria</span>
+            <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+              style={{ background: c.bg700, borderColor: c.bg500, color: c.text, ...inputPad }}>
+              {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+            </select>
+          </div>
         </div>
+      </div>
+
+      {/* Fixed bottom actions */}
+      <div style={{
+        padding: '12px 20px', paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+        display: 'flex', gap: 10, flexShrink: 0,
+        borderTop: `1px solid ${c.bg600}`,
+        background: c.bg900,
+      }}>
+        <button onClick={handleSave} style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          padding: '14px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+          background: c.accent, color: '#fff', border: 'none',
+        }}>
+          {isEdit ? <><Pencil size={16} /> Salvar</> : <><Plus size={16} /> Adicionar</>}
+        </button>
+        <button onClick={onCancel} style={{
+          padding: '14px 20px', borderRadius: 12, fontSize: 15, fontWeight: 600,
+          background: c.bg800, color: c.textMuted, border: `1.5px solid ${c.bg600}`,
+        }}>Cancelar</button>
       </div>
     </div>
   )
