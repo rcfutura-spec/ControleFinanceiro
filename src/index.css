@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+:root {
+  --c-bg900: #0a0a0f;
+  --c-bg800: #12121a;
+  --c-bg700: #1a1a2e;
+  --c-bg600: #232340;
+  --c-bg500: #2d2d50;
+  --c-accent: #6366f1;
+  --c-accent-light: #818cf8;
+  --c-accent-dark: #4f46e5;
+  --c-accent-glow: rgba(99,102,241,0.15);
+  --c-text: #f1f5f9;
+  --c-text-muted: #94a3b8;
+  --c-text-dim: #64748b;
+  --c-success: #22c55e;
+  --c-warning: #f59e0b;
+  --c-danger: #ef4444;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+@theme {
+  --color-dark-900: var(--c-bg900);
+  --color-dark-800: var(--c-bg800);
+  --color-dark-700: var(--c-bg700);
+  --color-dark-600: var(--c-bg600);
+  --color-dark-500: var(--c-bg500);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--c-bg900);
+  color: var(--c-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-bg500) transparent;
+  box-sizing: border-box;
+}
+
+/* Force dark on all form elements */
+input, select, textarea, button {
+  color: inherit;
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+textarea,
+select {
+  background-color: var(--c-bg700);
+  color: var(--c-text);
+  border: 1px solid var(--c-bg500);
+  border-radius: 12px;
+  font-size: 16px; /* prevents iOS zoom on focus */
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--c-accent);
+  width: 18px;
+  height: 18px;
+}
+
+select option {
+  background: var(--c-bg700);
+  color: var(--c-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--c-text-dim);
+  opacity: 0.6;
+}
+
+/* Focus */
+*:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Touch-friendly: minimum tap targets */
+button, a, select, [role="tab"], [role="button"] {
+  min-height: 36px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-fade-in { animation: fadeIn 0.2s ease-out both; }
+.animate-slide-in { animation: slideIn 0.2s ease-out both; }
+.animate-scale-in { animation: scaleIn 0.15s ease-out both; }
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-bg500); border-radius: 2px; }
+
+/* Mobile-specific */
+@media (max-width: 640px) {
+  /* Larger touch targets on mobile */
+  button, [role="tab"] {
+    min-height: 44px;
+  }
+
+  /* Better select on mobile */
+  select {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"] {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+}
+
+/* Pull-to-refresh prevention */
+@media (pointer: coarse) {
+  html {
+    overscroll-behavior-y: contain;
+  }
+}
