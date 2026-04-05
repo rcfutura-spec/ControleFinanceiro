@@ -49,12 +49,11 @@ function TransactionModal({ tx, categories, onSave, onCancel, theme }) {
   const inputClass = "w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-6" style={overlayStyle} onClick={onCancel}>
-      <div className="w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl px-5 pt-6 pb-8 sm:p-6 border-t sm:border animate-scale-in max-h-[85vh] overflow-y-auto" style={cardStyle} onClick={e => e.stopPropagation()}>
-        {/* Drag handle mobile */}
-        <div className="sm:hidden flex justify-center mb-4">
-          <div className="w-10 h-1 rounded-full" style={{ background: c.bg500 }} />
-        </div>
+    <div className="fixed inset-0 z-[60] sm:flex sm:items-center sm:justify-center sm:p-6" style={overlayStyle} onClick={onCancel}>
+      <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:max-w-lg sm:rounded-2xl sm:p-6 sm:border overflow-y-auto animate-scale-in"
+        style={{ ...cardStyle, paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
+        onClick={e => e.stopPropagation()}>
+        <div className="px-5 pb-8 sm:p-0">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-bold" style={{ color: c.text }}>{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
           <button onClick={onCancel} className="p-1.5 rounded-lg hover:opacity-70 transition-opacity" style={{ color: c.textDim }}><X size={18} /></button>
@@ -117,6 +116,9 @@ function TransactionModal({ tx, categories, onSave, onCancel, theme }) {
           </button>
           <button onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm font-medium border transition-colors"
             style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>Cancelar</button>
+        </div>
+        {/* Extra padding for mobile keyboard */}
+        <div className="h-8 sm:hidden" />
         </div>
       </div>
     </div>

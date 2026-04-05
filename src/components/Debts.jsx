@@ -77,15 +77,12 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
   const field = (err) => ({ background: c.bg700, borderColor: err ? '#ef4444' : c.bg500, color: c.text })
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-6"
+    <div className="fixed inset-0 z-[60] sm:flex sm:items-center sm:justify-center sm:p-6"
       style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }} onClick={onCancel}>
-      <div className="w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl px-5 pt-6 pb-8 sm:p-6 border-t sm:border animate-scale-in overflow-y-auto max-h-[85vh]"
-        style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: `0 -4px 32px rgba(0,0,0,0.4)` }}
+      <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:max-w-lg sm:rounded-2xl sm:p-6 sm:border overflow-y-auto animate-scale-in"
+        style={{ background: c.bg800, borderColor: c.bg600, color: c.text, paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
         onClick={e => e.stopPropagation()}>
-
-        <div className="sm:hidden flex justify-center mb-4">
-          <div className="w-10 h-1 rounded-full" style={{ background: c.bg500 }} />
-        </div>
+        <div className="px-5 pb-8 sm:p-0">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-bold">{isEdit ? 'Editar dívida' : 'Nova dívida'}</h3>
           <button onClick={onCancel} className="p-1.5 rounded-lg hover:opacity-70" style={{ color: c.textDim }}><X size={18} /></button>
@@ -167,6 +164,8 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
           <button onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm font-medium border"
             style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>Cancelar</button>
         </div>
+        <div className="h-8 sm:hidden" />
+        </div>
       </div>
     </div>
   )
@@ -199,15 +198,12 @@ function PaymentModal({ debt, onSave, onCancel, theme }) {
   const field = (err) => ({ background: c.bg700, borderColor: err ? '#ef4444' : c.bg500, color: c.text })
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-6"
+    <div className="fixed inset-0 z-[60] sm:flex sm:items-center sm:justify-center sm:p-6"
       style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }} onClick={onCancel}>
-      <div className="w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl px-5 pt-6 pb-8 sm:p-5 border-t sm:border animate-scale-in max-h-[85vh] overflow-y-auto"
-        style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: '0 -4px 32px rgba(0,0,0,0.4)' }}
+      <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:max-w-sm sm:rounded-2xl sm:p-5 sm:border overflow-y-auto animate-scale-in"
+        style={{ background: c.bg800, borderColor: c.bg600, color: c.text, paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
         onClick={e => e.stopPropagation()}>
-
-        <div className="sm:hidden flex justify-center mb-4">
-          <div className="w-10 h-1 rounded-full" style={{ background: c.bg500 }} />
-        </div>
+        <div className="px-5 pb-8 sm:p-0">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold">Registrar pagamento</h3>
           <button onClick={onCancel} className="p-1.5 rounded-lg" style={{ color: c.textDim }}><X size={16} /></button>
@@ -241,6 +237,8 @@ function PaymentModal({ debt, onSave, onCancel, theme }) {
             style={{ background: '#22c55e', color: '#fff' }}>
             <Check size={14} /> Confirmar pagamento
           </button>
+        </div>
+        <div className="h-8 sm:hidden" />
         </div>
       </div>
     </div>
