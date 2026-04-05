@@ -187,12 +187,9 @@ export default function Settings({ salary, setSalary, transactions, categories, 
       {/* Salary */}
       <Section title="Salário mensal" icon={DollarSign} theme={theme}>
         <div className="flex gap-3">
-          <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium" style={{ color: c.textDim }}>R$</span>
-            <input type="number" value={salaryInput} onChange={e => setSalaryInput(e.target.value)} min="0" step="100"
-              className="w-full rounded-xl pl-10 pr-3 py-2.5 text-sm border focus:outline-none focus:ring-2" style={inputStyle} />
-          </div>
-          <button onClick={handleSalarySave} className="px-5 py-2.5 rounded-xl text-sm font-medium" style={{ background: c.accent, color: '#fff' }}>Salvar</button>
+          <input type="number" value={salaryInput} onChange={e => setSalaryInput(e.target.value)} min="0" step="100"
+            placeholder="Valor em R$" className="flex-1" style={inputStyle} />
+          <button onClick={handleSalarySave} className="px-5 rounded-xl text-sm font-semibold shrink-0" style={{ background: c.accent, color: '#fff' }}>Salvar</button>
         </div>
         {salaryError && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{salaryError}</p>}
         {salary > 0 && <p className="text-[11px] mt-2" style={{ color: c.textDim }}>Atual: {formatCurrency(salary)}</p>}
@@ -202,12 +199,9 @@ export default function Settings({ salary, setSalary, transactions, categories, 
       <Section title="Meta de economia" icon={Target} theme={theme}>
         <p className="text-xs mb-3" style={{ color: c.textDim }}>Quanto quer guardar por mês? Acompanhe no Dashboard.</p>
         <div className="flex gap-3">
-          <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium" style={{ color: c.textDim }}>R$</span>
-            <input type="number" value={goalInput} onChange={e => setGoalInput(e.target.value)} min="0" step="50"
-              className="w-full rounded-xl pl-10 pr-3 py-2.5 text-sm border focus:outline-none focus:ring-2" style={inputStyle} />
-          </div>
-          <button onClick={handleGoalSave} className="px-5 py-2.5 rounded-xl text-sm font-medium" style={{ background: c.accent, color: '#fff' }}>Salvar</button>
+          <input type="number" value={goalInput} onChange={e => setGoalInput(e.target.value)} min="0" step="50"
+            placeholder="Valor em R$" className="flex-1" style={inputStyle} />
+          <button onClick={handleGoalSave} className="px-5 rounded-xl text-sm font-semibold shrink-0" style={{ background: c.accent, color: '#fff' }}>Salvar</button>
         </div>
       </Section>
 
