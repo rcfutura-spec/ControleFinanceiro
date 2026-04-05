@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useContext, useCallback } from 'react
 import { formatCurrency, formatDate, getMonthLabel, generateId, getTransactionHash, getMonthKey,
   validateAmount, validateDescription, validateDate, getTodayISO } from '../utils/helpers.js'
 import { parseCSV } from '../utils/csvParser.js'
+import { parsePDF } from '../utils/pdfParser.js'
 import { categorizeTransaction, learnCategorization, loadKeywords } from '../utils/categorizer.js'
 import { ThemeContext } from '../App.jsx'
 import Icon from './Icon.jsx'
@@ -187,10 +188,19 @@ export default function Transactions({ transactions, setTransactions, categories
     if (file.size > 10 * 1024 * 1024) { setImportResult({ success: false, message: 'Arquivo muito grande (máx 10MB)' }); return }
     setImporting(true); setImportResult(null)
     try {
-      const text = await file.text(); const parsed = await parseCSV(text); const keywords = loadKeywords()
+      const isPDF = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf'
+      let parsed
+      if (isPDF) {
+        const buffer = await file.arrayBuffer()
+        parsed = await parsePDF(buffer)
+      } else {
+        const text = await file.text()
+        parsed = await parseCSV(text)
+      }
+      const keywords = loadKeywords()
       let added = 0, skipped = 0; const newTx = []
       for (const t of parsed) { if (!t.date || !t.description) continue; const hash = getTransactionHash(t); if (existingHashes.has(hash)) { skipped++; continue }
-        newTx.push({ id: generateId(), date: t.date, description: t.description.slice(0, 200), amount: t.amount, category: categorizeTransaction(t.description, keywords), hash, type: 'expense' }); added++ }
+        newTx.push({ id: generateId(), date: t.date, description: t.description.slice(0, 200), amount: t.amount, category: categorizeTransaction(t.description, keywords), hash, type: t.type || 'expense' }); added++ }
       if (newTx.length > 0) onImport(newTx)
       setImportResult({ success: true, message: `${added} importadas${skipped > 0 ? `, ${skipped} duplicatas` : ''}` })
     } catch (err) { setImportResult({ success: false, message: err.message }) }
@@ -217,8 +227,8 @@ export default function Transactions({ transactions, setTransactions, categories
           </button>
           <label className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium cursor-pointer border"
             style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>
-            <Upload size={15} /> CSV
-            <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleFileUpload} disabled={importing} />
+            <Upload size={15} /> Importar
+            <input ref={fileRef} type="file" accept=".csv,.pdf,application/pdf" className="hidden" onChange={handleFileUpload} disabled={importing} />
           </label>
           <button onClick={() => setShowFilters(f => !f)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm border transition-colors"
