@@ -223,7 +223,7 @@ export default function App() {
           {activeTab === 'dashboard' && (
             <Dashboard transactions={transactions} categories={categories} salary={salary}
               selectedMonth={selectedMonth} months={months} onMonthChange={setSelectedMonth}
-              incomes={incomes} savingsGoal={savingsGoal} debts={debts} />
+              incomes={incomes} savingsGoal={savingsGoal} debts={debts} recurring={recurring} />
           )}
           {activeTab === 'transactions' && (
             <Transactions transactions={transactions} setTransactions={setTransactions}

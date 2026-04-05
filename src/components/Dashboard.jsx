@@ -86,7 +86,7 @@ function EmptyDashboard({ c }) {
   )
 }
 
-export default function Dashboard({ transactions, categories, salary, selectedMonth, months, onMonthChange, incomes, savingsGoal, debts }) {
+export default function Dashboard({ transactions, categories, salary, selectedMonth, months, onMonthChange, incomes, savingsGoal, debts, recurring }) {
   const theme = useContext(ThemeContext)
   const c = theme.colors
 
@@ -107,7 +107,14 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
   }
 
   const monthTx = useMemo(() => transactions.filter(t => t.date?.startsWith(selectedMonth)), [transactions, selectedMonth])
-  const totalSpent = useMemo(() => monthTx.reduce((s, t) => s + t.amount, 0), [monthTx])
+  const txSpent = useMemo(() => monthTx.reduce((s, t) => s + t.amount, 0), [monthTx])
+
+  // Recurring expenses (active ones)
+  const recurringTotal = useMemo(() => {
+    return (recurring || []).filter(r => r.active).reduce((s, r) => s + r.amount, 0)
+  }, [recurring])
+
+  const totalSpent = txSpent + recurringTotal
 
   const monthIncome = useMemo(() => {
     return (incomes || []).filter(i => i.recurring || i.date?.startsWith(selectedMonth)).reduce((s, i) => s + i.amount, 0)
@@ -120,8 +127,13 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
   const spendingByCategory = useMemo(() => {
     const map = {}; categories.forEach(cat => { map[cat.id] = 0 })
     monthTx.forEach(t => { if (map[t.category] !== undefined) map[t.category] += t.amount; else map['outros'] = (map['outros'] || 0) + t.amount })
+    // Add recurring expenses to their categories
+    ;(recurring || []).filter(r => r.active).forEach(r => {
+      if (map[r.category] !== undefined) map[r.category] += r.amount
+      else map['outros'] = (map['outros'] || 0) + r.amount
+    })
     return map
-  }, [monthTx, categories])
+  }, [monthTx, categories, recurring])
 
   const pieData = useMemo(() =>
     categories.filter(cat => spendingByCategory[cat.id] > 0)
@@ -213,7 +225,7 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
       <div className="grid grid-cols-1 gap-2">
         {[
           { label: 'Renda', value: formatCurrency(totalIncome), icon: Wallet, color: c.accent, sub: monthIncome > 0 ? `+extra` : null },
-          { label: 'Gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: `${monthTx.length} trans.` },
+          { label: 'Gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: recurringTotal > 0 ? `${monthTx.length} trans. + fixos` : `${monthTx.length} trans.` },
           { label: 'Saldo', value: formatCurrency(remaining), icon: remaining >= 0 ? ArrowUpRight : ArrowDownRight, color: remaining >= 0 ? '#22c55e' : '#ef4444', sub: null },
         ].map((card, i) => {
           const CardIcon = card.icon
