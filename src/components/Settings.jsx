@@ -4,9 +4,11 @@ import { storage } from '../utils/storage.js'
 import { ThemeContext } from '../App.jsx'
 import ThemePicker from './ThemePicker.jsx'
 import Icon from './Icon.jsx'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import {
   DollarSign, Target, TrendingUp, RefreshCw, Plus, Trash2, Check, X,
-  Download, Upload, FileSpreadsheet, FileText, Database,
+  Download, Upload, FileSpreadsheet, FileText, FileDown, Database,
   BarChart3, Calendar, Tags, Receipt, HardDrive,
 } from 'lucide-react'
 
@@ -153,6 +155,93 @@ export default function Settings({ salary, setSalary, transactions, categories, 
 
   const handleExportTxt = () => { const m = exportMonth || months[0]; if (!m) return; const tx = transactions.filter(t => t.date?.startsWith(m)); const total = tx.reduce((s, t) => s + t.amount, 0); let text = `RESUMO - ${getMonthLabel(m)}\n${'='.repeat(40)}\nSalário: ${formatCurrency(salary)}\nGasto: ${formatCurrency(total)}\nSaldo: ${formatCurrency(salary - total)}\n\nCATEGORIAS\n${'-'.repeat(40)}\n`; const byC = {}; categories.forEach(cat => { byC[cat.id] = { ...cat, spent: 0 } }); tx.forEach(t => { if (byC[t.category]) byC[t.category].spent += t.amount }); Object.values(byC).filter(cat => cat.spent > 0).forEach(cat => { text += `${cat.name}: ${formatCurrency(cat.spent)} / ${formatCurrency(cat.limit)}\n` }); text += `\nTRANSAÇÕES (${tx.length})\n${'-'.repeat(40)}\n`; tx.sort((a, b) => a.date.localeCompare(b.date)).forEach(t => { const cat = categories.find(ct => ct.id === t.category); text += `${t.date} | ${t.description.slice(0, 35).padEnd(35)} | ${formatCurrency(t.amount).padStart(12)} | ${cat?.name || 'Outros'}\n` }); dl(`resumo-${m}.txt`, text, 'text/plain;charset=utf-8') }
 
+  const handleExportPDF = () => {
+    const m = exportMonth || months[0]
+    if (!m) return
+    const tx = transactions.filter(t => t.date?.startsWith(m))
+    const total = tx.reduce((s, t) => s + t.amount, 0)
+    const saldo = salary - total
+
+    const doc = new jsPDF()
+
+    // Title
+    doc.setFontSize(18)
+    doc.setTextColor(40, 40, 40)
+    doc.text(`Resumo Financeiro`, 14, 20)
+    doc.setFontSize(12)
+    doc.setTextColor(100, 100, 100)
+    doc.text(getMonthLabel(m), 14, 28)
+
+    // Summary
+    doc.setFontSize(11)
+    doc.setTextColor(40, 40, 40)
+    const summaryY = 40
+    doc.text(`Salário: ${formatCurrency(salary)}`, 14, summaryY)
+    doc.text(`Total gasto: ${formatCurrency(total)}`, 14, summaryY + 7)
+    doc.setTextColor(saldo >= 0 ? 34 : 220, saldo >= 0 ? 197 : 38, saldo >= 0 ? 94 : 38)
+    doc.text(`Saldo: ${formatCurrency(saldo)}`, 14, summaryY + 14)
+    doc.setTextColor(100, 100, 100)
+    doc.text(`Percentual gasto: ${salary > 0 ? ((total / salary) * 100).toFixed(1) : 0}%`, 14, summaryY + 21)
+
+    // Categories table
+    const byC = {}
+    categories.forEach(cat => { byC[cat.id] = { ...cat, spent: 0 } })
+    tx.forEach(t => { if (byC[t.category]) byC[t.category].spent += t.amount })
+    const catRows = Object.values(byC).filter(cat => cat.spent > 0).map(cat => [
+      cat.name,
+      formatCurrency(cat.spent),
+      formatCurrency(cat.limit),
+      cat.limit > 0 ? `${((cat.spent / cat.limit) * 100).toFixed(0)}%` : '-',
+    ])
+
+    if (catRows.length > 0) {
+      doc.setFontSize(13)
+      doc.setTextColor(40, 40, 40)
+      doc.text('Gastos por Categoria', 14, summaryY + 35)
+      autoTable(doc, {
+        startY: summaryY + 40,
+        head: [['Categoria', 'Gasto', 'Limite', '%']],
+        body: catRows,
+        theme: 'striped',
+        headStyles: { fillColor: [99, 102, 241] },
+        styles: { fontSize: 9 },
+      })
+    }
+
+    // Transactions table
+    const txRows = tx.sort((a, b) => a.date.localeCompare(b.date)).map(t => {
+      const cat = categories.find(ct => ct.id === t.category)
+      return [t.date, t.description.slice(0, 40), formatCurrency(t.amount), cat?.name || 'Outros']
+    })
+
+    if (txRows.length > 0) {
+      const lastY = doc.lastAutoTable?.finalY || summaryY + 45
+      doc.setFontSize(13)
+      doc.setTextColor(40, 40, 40)
+      doc.text(`Transações (${txRows.length})`, 14, lastY + 12)
+      autoTable(doc, {
+        startY: lastY + 17,
+        head: [['Data', 'Descrição', 'Valor', 'Categoria']],
+        body: txRows,
+        theme: 'striped',
+        headStyles: { fillColor: [99, 102, 241] },
+        styles: { fontSize: 8 },
+        columnStyles: { 1: { cellWidth: 70 } },
+      })
+    }
+
+    // Footer
+    const pageCount = doc.getNumberOfPages()
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i)
+      doc.setFontSize(8)
+      doc.setTextColor(150, 150, 150)
+      doc.text(`Controle Financeiro - ${getMonthLabel(m)} - Página ${i}/${pageCount}`, 14, doc.internal.pageSize.height - 10)
+    }
+
+    doc.save(`extrato-${m}.pdf`)
+  }
+
   const handleBackup = () => { dl(`backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(storage.exportAll(), null, 2), 'application/json'); setBackupMsg('Backup salvo!'); setTimeout(() => setBackupMsg(''), 3000) }
   const handleRestore = async (e) => { const f = e.target.files?.[0]; if (!f) return; try { storage.importAll(JSON.parse(await f.text())); setBackupMsg('Restaurado! Recarregue a página.') } catch { setBackupMsg('Arquivo inválido') }; setTimeout(() => setBackupMsg(''), 5000) }
 
@@ -217,7 +306,9 @@ export default function Settings({ salary, setSalary, transactions, categories, 
           <button onClick={handleExportCSV} disabled={!months.length} className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium disabled:opacity-30"
             style={{ background: c.accent, color: '#fff' }}><FileSpreadsheet size={14} /> CSV</button>
           <button onClick={handleExportTxt} disabled={!months.length} className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium disabled:opacity-30"
-            style={{ background: c.accentDark, color: '#fff' }}><FileText size={14} /> Relatório</button>
+            style={{ background: c.accentDark, color: '#fff' }}><FileText size={14} /> TXT</button>
+          <button onClick={handleExportPDF} disabled={!months.length} className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium disabled:opacity-30"
+            style={{ background: '#ef4444', color: '#fff' }}><FileDown size={14} /> PDF</button>
         </div>
       </Section>
 
