@@ -210,12 +210,11 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Renda total', value: formatCurrency(totalIncome), icon: Wallet, color: c.accent, sub: monthIncome > 0 ? `+${formatCurrency(monthIncome)} extra` : null },
-          { label: 'Total gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: `${monthTx.length} transações` },
+          { label: 'Renda', value: formatCurrency(totalIncome), icon: Wallet, color: c.accent, sub: monthIncome > 0 ? `+${formatCurrency(monthIncome)} extra` : null },
+          { label: 'Gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: `${monthTx.length} transações` },
           { label: 'Saldo', value: formatCurrency(remaining), icon: remaining >= 0 ? ArrowUpRight : ArrowDownRight, color: remaining >= 0 ? '#22c55e' : '#ef4444', sub: null },
-          { label: 'Previsão', value: formatCurrency(forecastTotal), icon: Activity, color: forecastTotal > totalIncome ? '#f59e0b' : c.accentLight, sub: `Saldo: ${formatCurrency(totalIncome - forecastTotal)}` },
         ].map((card, i) => {
           const CardIcon = card.icon
           return (
@@ -320,89 +319,27 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
         )
       })()}
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-xl p-4 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
-          <div className="flex items-center gap-2 mb-4">
-            <PieChartIcon size={16} style={{ color: c.textMuted }} />
-            <h3 className="text-sm font-semibold">Gastos por categoria</h3>
-          </div>
-          {pieData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={95} paddingAngle={3} dataKey="value"
-                  animationBegin={0} animationDuration={800}>
-                  {pieData.map((entry, i) => <Cell key={i} fill={entry.color || c.chart[i % c.chart.length]} />)}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend formatter={v => <span style={{ color: c.textMuted, fontSize: '11px' }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[260px] flex flex-col items-center justify-center" style={{ color: c.textDim }}>
-              <PieChartIcon size={32} className="mb-2 opacity-30" />
-              <span className="text-sm">Sem dados neste mês</span>
-            </div>
-          )}
+      {/* Chart */}
+      <div className="rounded-xl p-4 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
+        <div className="flex items-center gap-2 mb-4">
+          <PieChartIcon size={16} style={{ color: c.textMuted }} />
+          <h3 className="text-sm font-semibold">Gastos por categoria</h3>
         </div>
-
-        <div className="rounded-xl p-4 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
-          <div className="flex items-center gap-2 mb-4">
-            <BarChart3 size={16} style={{ color: c.textMuted }} />
-            <h3 className="text-sm font-semibold">Gasto vs Limite</h3>
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={barData} margin={{ top: 0, right: 0, left: -15, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={c.bg500 + '60'} />
-              <XAxis dataKey="name" tick={{ fill: c.textDim, fontSize: 10 }} angle={-20} textAnchor="end" height={50} />
-              <YAxis tick={{ fill: c.textDim, fontSize: 10 }} />
+        {pieData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={280}>
+            <PieChart>
+              <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={100} paddingAngle={3} dataKey="value"
+                animationBegin={0} animationDuration={800}>
+                {pieData.map((entry, i) => <Cell key={i} fill={entry.color || c.chart[i % c.chart.length]} />)}
+              </Pie>
               <Tooltip content={<CustomTooltip />} />
               <Legend formatter={v => <span style={{ color: c.textMuted, fontSize: '11px' }}>{v}</span>} />
-              <Bar dataKey="Gasto" fill={c.accent} radius={[3, 3, 0, 0]} animationDuration={600} />
-              <Bar dataKey="Limite" fill={c.bg500} radius={[3, 3, 0, 0]} animationDuration={600} />
-            </BarChart>
+            </PieChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Row 2 charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {forecastData.length > 0 && (
-          <div className="rounded-xl p-4 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
-            <div className="flex items-center gap-2 mb-4">
-              <Activity size={16} style={{ color: c.textMuted }} />
-              <h3 className="text-sm font-semibold">Previsão mensal</h3>
-            </div>
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={forecastData} margin={{ top: 0, right: 0, left: -15, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={c.bg500 + '60'} />
-                <XAxis dataKey="day" tick={{ fill: c.textDim, fontSize: 10 }} />
-                <YAxis tick={{ fill: c.textDim, fontSize: 10 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="Real" stroke={c.accent} fill={c.accent + '20'} strokeWidth={2} animationDuration={800} />
-                <Area type="monotone" dataKey="Previsto" stroke="#f59e0b" fill="#f59e0b10" strokeWidth={2} strokeDasharray="6 3" animationDuration={800} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-
-        {trendData.length >= 2 && (
-          <div className="rounded-xl p-4 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={16} style={{ color: c.textMuted }} />
-              <h3 className="text-sm font-semibold">Tendência mensal</h3>
-            </div>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={trendData} margin={{ top: 0, right: 0, left: -15, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={c.bg500 + '60'} />
-                <XAxis dataKey="name" tick={{ fill: c.textDim, fontSize: 11 }} />
-                <YAxis tick={{ fill: c.textDim, fontSize: 10 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend formatter={v => <span style={{ color: c.textMuted, fontSize: '11px' }}>{v}</span>} />
-                <Line type="monotone" dataKey="Total" stroke={c.accent} strokeWidth={2} dot={{ fill: c.accent, r: 3 }} animationDuration={800} />
-                <Line type="monotone" dataKey="Renda" stroke="#22c55e60" strokeWidth={1.5} strokeDasharray="6 3" dot={false} animationDuration={800} />
-              </LineChart>
-            </ResponsiveContainer>
+        ) : (
+          <div className="h-[280px] flex flex-col items-center justify-center" style={{ color: c.textDim }}>
+            <PieChartIcon size={32} className="mb-2 opacity-30" />
+            <span className="text-sm">Sem dados neste mês</span>
           </div>
         )}
       </div>
