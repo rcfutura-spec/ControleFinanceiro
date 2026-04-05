@@ -144,7 +144,7 @@ export default function Settings({ salary, setSalary, transactions, categories, 
   const [exportMonth, setExportMonth] = useState('')
   const [backupMsg, setBackupMsg] = useState('')
 
-  const months = useMemo(() => { const s = new Set(); transactions.forEach(t => { const mk = getMonthKey(t.date); if (mk) s.add(mk) }); return [...s].sort().reverse() }, [transactions])
+  const months = useMemo(() => { const s = new Set(); const now = new Date(); s.add(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`); transactions.forEach(t => { const mk = getMonthKey(t.date); if (mk) s.add(mk) }); return [...s].sort().reverse() }, [transactions])
 
   const handleSalarySave = () => { const v = validateAmount(salaryInput); if (!v.valid) { setSalaryError(v.error); return }; setSalaryError(''); setSalary(v.value) }
   const handleGoalSave = () => { setSavingsGoal(Math.max(0, parseFloat(goalInput) || 0)) }
@@ -239,7 +239,23 @@ export default function Settings({ salary, setSalary, transactions, categories, 
       doc.text(`Controle Financeiro - ${getMonthLabel(m)} - Página ${i}/${pageCount}`, 14, doc.internal.pageSize.height - 10)
     }
 
-    doc.save(`extrato-${m}.pdf`)
+    const filename = `extrato-${m}.pdf`
+    const blob = doc.output('blob')
+    const file = new File([blob], filename, { type: 'application/pdf' })
+
+    if (navigator.canShare?.({ files: [file] })) {
+      navigator.share({ files: [file], title: 'Extrato Financeiro' }).catch(() => {})
+    } else {
+      const dataUri = doc.output('datauristring')
+      const a = document.createElement('a')
+      a.href = dataUri
+      a.download = filename
+      a.target = '_blank'
+      a.rel = 'noopener'
+      document.body.appendChild(a)
+      a.click()
+      setTimeout(() => document.body.removeChild(a), 100)
+    }
   }
 
   const handleBackup = () => { dl(`backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(storage.exportAll(), null, 2), 'application/json'); setBackupMsg('Backup salvo!'); setTimeout(() => setBackupMsg(''), 3000) }
