@@ -150,7 +150,7 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
   return (
     <>
       {/* Mobile fullscreen */}
-      <div className="fixed inset-0 z-[60] overflow-y-auto sm:hidden" style={{ background: c.bg900, color: c.text }}>
+      <div className="fixed inset-0 z-[100] overflow-y-auto sm:hidden" style={{ background: c.bg900, color: c.text }}>
         <div className="px-5 pt-4 pb-10" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold">{isEdit ? 'Editar dívida' : 'Nova dívida'}</h3>
@@ -162,7 +162,7 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
       </div>
 
       {/* Desktop modal */}
-      <div className="fixed inset-0 z-[60] hidden sm:flex items-center justify-center p-6"
+      <div className="fixed inset-0 z-[100] hidden sm:flex items-center justify-center p-6"
         style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }} onClick={onCancel}>
         <div className="w-full max-w-lg rounded-2xl p-6 border animate-scale-in overflow-y-auto max-h-[90vh]"
           style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}
@@ -235,7 +235,7 @@ function PaymentModal({ debt, onSave, onCancel, theme }) {
   return (
     <>
       {/* Mobile fullscreen */}
-      <div className="fixed inset-0 z-[60] overflow-y-auto sm:hidden" style={{ background: c.bg900, color: c.text }}>
+      <div className="fixed inset-0 z-[100] overflow-y-auto sm:hidden" style={{ background: c.bg900, color: c.text }}>
         <div className="px-5 pt-4 pb-10" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold">Registrar pagamento</h3>
@@ -252,7 +252,7 @@ function PaymentModal({ debt, onSave, onCancel, theme }) {
       </div>
 
       {/* Desktop modal */}
-      <div className="fixed inset-0 z-[60] hidden sm:flex items-center justify-center p-6"
+      <div className="fixed inset-0 z-[100] hidden sm:flex items-center justify-center p-6"
         style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }} onClick={onCancel}>
         <div className="w-full max-w-sm rounded-2xl p-5 border animate-scale-in"
           style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}
