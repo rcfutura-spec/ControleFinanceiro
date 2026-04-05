@@ -69,7 +69,7 @@ select {
   background-color: var(--c-bg700);
   color: var(--c-text);
   border: 1.5px solid var(--c-bg500);
-  padding: 14px 16px;
+  padding: 12px 14px;
   font-size: 16px; /* prevents iOS zoom */
   line-height: 1.4;
   width: 100%;
@@ -143,6 +143,19 @@ button, a, [role="tab"], [role="button"], label[class*="cursor"] {
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ── Very small screens ── */
+@media (max-width: 360px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="search"],
+  textarea,
+  select {
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+}
 
 /* ── Desktop overrides ── */
 @media (min-width: 768px) {

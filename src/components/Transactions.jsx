@@ -296,8 +296,8 @@ export default function Transactions({ transactions, setTransactions, categories
         </div>
       ) : (
         <>
-          {/* Table */}
-          <div className="rounded-xl border overflow-hidden" style={{ background: c.bg800, borderColor: c.bg600 }}>
+          {/* Table (desktop) */}
+          <div className="rounded-xl border overflow-hidden hidden md:block" style={{ background: c.bg800, borderColor: c.bg600 }}>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -327,7 +327,7 @@ export default function Transactions({ transactions, setTransactions, categories
                         style={{ borderBottom: `1px solid ${c.bg700}`, background: selected ? c.accent + '06' : 'transparent' }}>
                         <td className="px-3 py-2.5"><input type="checkbox" checked={selected} onChange={() => toggleSelect(tx.id)} className="rounded" /></td>
                         <td className="px-3 py-2.5 text-xs whitespace-nowrap" style={{ color: c.textMuted }}>{formatDate(tx.date)}</td>
-                        <td className="px-3 py-2.5 text-sm max-w-[240px] truncate" title={tx.description}>{tx.description}</td>
+                        <td className="px-3 py-2.5 text-sm max-w-[120px] sm:max-w-[240px] truncate" title={tx.description}>{tx.description}</td>
                         <td className="px-3 py-2.5 text-sm font-semibold whitespace-nowrap tabular-nums" style={{ color: tx.type === 'income' ? '#22c55e' : '#ef4444' }}>
                           {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                         </td>
@@ -357,6 +357,45 @@ export default function Transactions({ transactions, setTransactions, categories
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Mobile card list */}
+          <div className="md:hidden space-y-2">
+            {paginated.length === 0 ? (
+              <div className="text-center py-12 text-sm" style={{ color: c.textDim }}>Nenhuma transação encontrada</div>
+            ) : paginated.map(tx => {
+              const cat = getCat(tx.category)
+              const selected = selectedIds.has(tx.id)
+              return (
+                <div key={tx.id} className="rounded-xl p-3 border" style={{ background: selected ? c.accent + '06' : c.bg800, borderColor: c.bg600 }}>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" checked={selected} onChange={() => toggleSelect(tx.id)} className="rounded shrink-0" />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: (cat.color || c.accent) + '18' }}>
+                      <Icon name={cat.icon} size={14} style={{ color: cat.color || c.accent }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate">{tx.description}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[11px]" style={{ color: c.textDim }}>{formatDate(tx.date)}</span>
+                        <span className="text-[11px]" style={{ color: c.textDim }}>·</span>
+                        <span className="text-[11px]" style={{ color: c.textMuted }}>{cat.name}</span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-semibold tabular-nums" style={{ color: tx.type === 'income' ? '#22c55e' : '#ef4444' }}>
+                        {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mt-2 justify-end">
+                    <button onClick={() => { setEditingTx(tx); setShowModal(true) }} className="p-1.5 rounded-lg" style={{ color: c.textDim }} aria-label="Editar"><Pencil size={13} /></button>
+                    <button onClick={() => handleDelete(tx.id)} className="p-1.5 rounded-lg"
+                      style={{ color: confirmDelete === tx.id ? '#fff' : '#ef4444', background: confirmDelete === tx.id ? '#ef4444' : 'transparent', borderRadius: '8px' }}
+                      aria-label="Excluir">{confirmDelete === tx.id ? <span className="text-[10px] font-semibold px-1">Confirmar</span> : <Trash2 size={13} />}</button>
+                  </div>
+                </div>
+              )
+            })}
           </div>
 
           {/* Pagination */}

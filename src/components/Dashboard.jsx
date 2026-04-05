@@ -210,7 +210,7 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2">
         {[
           { label: 'Renda', value: formatCurrency(totalIncome), icon: Wallet, color: c.accent, sub: monthIncome > 0 ? `+extra` : null },
           { label: 'Gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: `${monthTx.length} trans.` },
@@ -218,15 +218,17 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
         ].map((card, i) => {
           const CardIcon = card.icon
           return (
-            <div key={i} className="rounded-xl p-3 border overflow-hidden" style={{ background: c.bg800, borderColor: c.bg600 }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.textDim }}>{card.label}</span>
-                <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: card.color + '15' }}>
-                  <CardIcon size={12} style={{ color: card.color }} />
+            <div key={i} className="rounded-xl px-3 py-2.5 border overflow-hidden flex items-center justify-between" style={{ background: c.bg800, borderColor: c.bg600 }}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-md flex items-center justify-center shrink-0" style={{ background: card.color + '15' }}>
+                  <CardIcon size={13} style={{ color: card.color }} />
                 </div>
+                <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: c.textDim }}>{card.label}</span>
               </div>
-              <p className="text-sm font-bold tracking-tight truncate tabular-nums" style={{ color: card.color }}>{card.value}</p>
-              {card.sub && <p className="text-[10px] mt-0.5 truncate" style={{ color: c.textDim }}>{card.sub}</p>}
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold tracking-tight truncate tabular-nums" style={{ color: card.color }}>{card.value}</p>
+                {card.sub && <span className="text-[10px] truncate" style={{ color: c.textDim }}>{card.sub}</span>}
+              </div>
             </div>
           )
         })}
@@ -286,7 +288,7 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
                 {activeDebts.length} {activeDebts.length === 1 ? 'dívida' : 'dívidas'}
               </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               <div>
                 <p className="text-[10px] uppercase tracking-wider" style={{ color: c.textDim }}>Falta pagar</p>
                 <p className="text-sm font-bold tabular-nums" style={{ color: '#ef4444' }}>{formatCurrency(totalRemaining)}</p>
@@ -326,7 +328,7 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
           <h3 className="text-sm font-semibold">Gastos por categoria</h3>
         </div>
         {pieData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={100} paddingAngle={3} dataKey="value"
                 animationBegin={0} animationDuration={800}>
@@ -337,7 +339,7 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
             </PieChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-[280px] flex flex-col items-center justify-center" style={{ color: c.textDim }}>
+          <div className="h-[220px] flex flex-col items-center justify-center" style={{ color: c.textDim }}>
             <PieChartIcon size={32} className="mb-2 opacity-30" />
             <span className="text-sm">Sem dados neste mês</span>
           </div>

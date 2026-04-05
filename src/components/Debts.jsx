@@ -92,7 +92,7 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
         <input type="text" value={form.description} maxLength={200} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
           placeholder="Detalhes adicionais..." className={inp} style={field()} />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={lbl} style={{ color: c.textDim }}>Valor total (R$)</label>
           <input type="number" value={form.totalAmount} min="0" step="0.01" onChange={e => handleTotalChange(e.target.value)}
@@ -106,7 +106,7 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
           {errors.installments && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.installments}</p>}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={lbl} style={{ color: c.textDim }}>Valor parcela (R$)</label>
           <input type="number" value={form.installmentValue} min="0" step="0.01"
@@ -120,7 +120,7 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
             className={inp} style={field(errors.dueDay)} />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={lbl} style={{ color: c.textDim }}>Data início</label>
           <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))}
@@ -137,12 +137,12 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
   )
 
   const actionButtons = (mobile) => (
-    <div className={`flex gap-${mobile ? '3' : '2'} mt-${mobile ? '8' : '6'}`}>
-      <button onClick={handleSave} className={`flex-1 flex items-center justify-center gap-2 px-4 py-${mobile ? '3.5' : '2.5'} rounded-xl text-${mobile ? 'base' : 'sm'} font-semibold`}
+    <div className={mobile ? 'flex gap-3 mt-8' : 'flex gap-2 mt-6'}>
+      <button onClick={handleSave} className={mobile ? 'flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-base font-semibold' : 'flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold'}
         style={{ background: c.accent, color: '#fff' }}>
         {isEdit ? <><Pencil size={mobile ? 16 : 14} /> Salvar</> : <><Plus size={mobile ? 16 : 14} /> Adicionar</>}
       </button>
-      <button onClick={onCancel} className={`px-${mobile ? '5' : '4'} py-${mobile ? '3.5' : '2.5'} rounded-xl text-${mobile ? 'base' : 'sm'} font-medium border`}
+      <button onClick={onCancel} className={mobile ? 'px-5 py-3.5 rounded-xl text-base font-medium border' : 'px-4 py-2.5 rounded-xl text-sm font-medium border'}
         style={{ background: c.bg800, borderColor: c.bg600, color: c.textMuted }}>Cancelar</button>
     </div>
   )
@@ -391,16 +391,16 @@ function DebtCard({ debt, onEdit, onDelete, onPay, onToggleExpand, expanded, the
           {/* Actions */}
           <div className="flex gap-2">
             {!isComplete && (
-              <button onClick={() => onPay(debt)} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold"
+              <button onClick={() => onPay(debt)} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold"
                 style={{ background: '#22c55e', color: '#fff' }}>
                 <DollarSign size={13} /> Registrar pagamento
               </button>
             )}
-            <button onClick={() => onEdit(debt)} className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border"
+            <button onClick={() => onEdit(debt)} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium border"
               style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>
               <Pencil size={12} /> Editar
             </button>
-            <button onClick={() => onDelete(debt.id)} className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border"
+            <button onClick={() => onDelete(debt.id)} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium border"
               style={{ background: '#ef444410', borderColor: '#ef444425', color: '#ef4444' }}>
               <Trash2 size={12} />
             </button>
@@ -545,7 +545,7 @@ export default function Debts({ debts, setDebts }) {
 
       {/* Confirm delete toast */}
       {confirmDelete && (
-        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-medium animate-scale-in border flex items-center gap-3"
+        <div className="fixed bottom-[5.5rem] md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-medium animate-scale-in border flex items-center gap-3"
           style={{ background: c.bg700, borderColor: '#ef444430', color: '#ef4444' }}>
           <AlertTriangle size={14} />
           Clique novamente em excluir para confirmar

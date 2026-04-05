@@ -153,13 +153,13 @@ export default function Categories({ categories, setCategories, transactions }) 
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => startEdit(cat)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium border transition-colors"
                       style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>
                       <Pencil size={12} /> Editar
                     </button>
                     {cat.id !== 'outros' && (
                       <button onClick={() => remove(cat.id)}
-                        className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors"
+                        className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-lg text-xs font-medium border transition-colors"
                         style={{ background: confirmDelete === cat.id ? '#ef4444' : '#ef444410', borderColor: '#ef444425', color: confirmDelete === cat.id ? '#fff' : '#ef4444' }}>
                         <Trash2 size={12} /> {confirmDelete === cat.id ? 'Confirmar' : ''}
                       </button>

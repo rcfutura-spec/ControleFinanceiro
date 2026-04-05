@@ -45,14 +45,14 @@ function RecurringSection({ recurring, setRecurring, categories, theme }) {
             return (
               <div key={r.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm"
                 style={{ background: c.bg700, borderColor: c.bg600, opacity: r.active ? 1 : 0.4 }}>
-                <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: (cat?.color || '#6b7280') + '18' }}>
+                <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: (cat?.color || '#6b7280') + '18' }}>
                   <Icon name={cat?.icon || 'Package'} size={12} style={{ color: cat?.color || '#6b7280' }} />
                 </div>
                 <span className="flex-1 truncate text-xs">{r.description}</span>
                 <span className="text-xs font-semibold tabular-nums" style={{ color: '#ef4444' }}>{formatCurrency(r.amount)}</span>
                 <span className="text-[10px]" style={{ color: c.textDim }}>dia {r.dayOfMonth}</span>
                 <button onClick={() => setRecurring(prev => prev.map(x => x.id === r.id ? { ...x, active: !x.active } : x))}
-                  className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: r.active ? '#22c55e18' : c.bg600 }}>
+                  className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: r.active ? '#22c55e18' : c.bg600 }}>
                   {r.active ? <Check size={12} style={{ color: '#22c55e' }} /> : <X size={12} style={{ color: c.textDim }} />}
                 </button>
                 <button onClick={() => setRecurring(prev => prev.filter(x => x.id !== r.id))} className="p-1" style={{ color: '#ef4444' }}>
@@ -66,7 +66,7 @@ function RecurringSection({ recurring, setRecurring, categories, theme }) {
           </p>
         </div>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
         <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
           placeholder="Descrição" className="sm:col-span-2 rounded-xl px-3 py-2 text-sm border" style={inputStyle} />
         <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
@@ -117,7 +117,7 @@ function IncomeSection({ incomes, setIncomes, theme }) {
           ))}
         </div>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
           placeholder="Descrição" className="rounded-xl px-3 py-2 text-sm border" style={inputStyle} />
         <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
@@ -240,7 +240,7 @@ export default function Settings({ salary, setSalary, transactions, categories, 
 
       {/* Stats */}
       <Section title="Estatísticas" icon={BarChart3} theme={theme}>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { icon: Receipt, label: 'Transações', value: transactions.length, color: c.accent },
             { icon: Calendar, label: 'Meses', value: months.length, color: c.accent },
