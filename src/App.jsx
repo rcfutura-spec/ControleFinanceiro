@@ -4,7 +4,7 @@ import { DEFAULT_CATEGORIES } from './utils/categories.js'
 import { getCurrentMonthKey, getMonthKey, getTransactionHash } from './utils/helpers.js'
 import { getTheme, applyTheme } from './utils/themes.js'
 import { createUndoManager } from './utils/undoManager.js'
-import { LayoutDashboard, Receipt, Tags, Settings as SettingsIcon, Undo2, Redo2, Wallet, CreditCard } from 'lucide-react'
+import { LayoutDashboard, Receipt, Tags, Settings as SettingsIcon, Undo2, Redo2, Wallet, CreditCard, RefreshCw } from 'lucide-react'
 import Dashboard from './components/Dashboard.jsx'
 import Transactions from './components/Transactions.jsx'
 import Categories from './components/Categories.jsx'
@@ -34,6 +34,8 @@ export default function App() {
   const [themeId, setThemeIdState] = useState('midnight-indigo')
   const [loaded, setLoaded] = useState(false)
   const [toast, setToast] = useState(null)
+  const [updateAvailable, setUpdateAvailable] = useState(false)
+  const waitingWorker = useRef(null)
 
   const undoMgr = useRef(createUndoManager()).current
   const theme = useMemo(() => getTheme(themeId), [themeId])
@@ -56,6 +58,48 @@ export default function App() {
   }, [])
 
   useEffect(() => { if (loaded) applyTheme(theme) }, [theme, loaded])
+
+  // Detect service worker updates
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (!reg) return
+      const check = (sw) => {
+        sw.addEventListener('statechange', () => {
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+            waitingWorker.current = sw
+            setUpdateAvailable(true)
+          }
+        })
+      }
+      if (reg.waiting) { waitingWorker.current = reg.waiting; setUpdateAvailable(true) }
+      if (reg.installing) check(reg.installing)
+      reg.addEventListener('updatefound', () => { if (reg.installing) check(reg.installing) })
+    })
+    // Check for updates every 30 minutes
+    const interval = setInterval(() => {
+      navigator.serviceWorker.getRegistration().then(reg => reg?.update())
+    }, 30 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleAppUpdate = useCallback(() => {
+    if (waitingWorker.current) {
+      waitingWorker.current.postMessage('SKIP_WAITING')
+      setUpdateAvailable(false)
+      setTimeout(() => window.location.reload(), 500)
+    } else {
+      // Force reload clearing cache
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if (reg) reg.update()
+        })
+      }
+      caches.keys().then(names => Promise.all(names.map(n => caches.delete(n)))).then(() => {
+        window.location.reload()
+      })
+    }
+  }, [])
 
   const showToast = useCallback((msg, duration = 2500) => {
     setToast(msg); setTimeout(() => setToast(null), duration)
@@ -196,7 +240,8 @@ export default function App() {
             <Settings salary={salary} setSalary={setSalary} transactions={transactions}
               categories={categories} onReset={handleReset} themeId={themeId} onThemeChange={setThemeId}
               savingsGoal={savingsGoal} setSavingsGoal={setSavingsGoal}
-              recurring={recurring} setRecurring={setRecurring} incomes={incomes} setIncomes={setIncomes} />
+              recurring={recurring} setRecurring={setRecurring} incomes={incomes} setIncomes={setIncomes}
+              onAppUpdate={handleAppUpdate} />
           )}
         </main>
 
@@ -228,6 +273,22 @@ export default function App() {
             })}
           </div>
         </nav>
+
+        {/* Update banner */}
+        {updateAvailable && (
+          <div className="fixed top-4 left-4 right-4 md:left-auto md:right-6 md:w-80 z-50 rounded-xl p-4 border shadow-2xl animate-scale-in flex items-center gap-3"
+            style={{ background: c.bg800, borderColor: c.accent + '40' }}>
+            <RefreshCw size={18} style={{ color: c.accent }} />
+            <div className="flex-1">
+              <p className="text-sm font-semibold">Atualização disponível</p>
+              <p className="text-[11px]" style={{ color: c.textDim }}>Nova versão pronta</p>
+            </div>
+            <button onClick={handleAppUpdate} className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+              style={{ background: c.accent, color: '#fff' }}>
+              Atualizar
+            </button>
+          </div>
+        )}
 
         {/* Toast */}
         {toast && (

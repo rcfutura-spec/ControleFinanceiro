@@ -1,4 +1,4 @@
-const CACHE_NAME = 'financeiro-v1'
+const CACHE_NAME = 'financeiro-v2'
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()
@@ -28,4 +28,11 @@ self.addEventListener('fetch', (e) => {
       })
       .catch(() => caches.match(e.request))
   )
+})
+
+// Listen for skip waiting message from the app
+self.addEventListener('message', (e) => {
+  if (e.data === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
 })

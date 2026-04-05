@@ -134,7 +134,7 @@ function IncomeSection({ incomes, setIncomes, theme }) {
 }
 
 export default function Settings({ salary, setSalary, transactions, categories, onReset, themeId, onThemeChange,
-  savingsGoal, setSavingsGoal, recurring, setRecurring, incomes, setIncomes }) {
+  savingsGoal, setSavingsGoal, recurring, setRecurring, incomes, setIncomes, onAppUpdate }) {
   const theme = useContext(ThemeContext); const c = theme.colors
   const [salaryInput, setSalaryInput] = useState(String(salary))
   const [salaryError, setSalaryError] = useState('')
@@ -166,6 +166,18 @@ export default function Settings({ salary, setSalary, transactions, categories, 
         <h2 className="text-xl font-bold tracking-tight">Configurações</h2>
         <p className="text-xs mt-0.5" style={{ color: c.textDim }}>Personalize seu controle financeiro</p>
       </div>
+
+      {/* App Update */}
+      <Section title="Atualização do app" icon={RefreshCw} theme={theme}>
+        <p className="text-xs mb-3" style={{ color: c.textDim }}>
+          Verifique se há uma nova versão disponível e atualize o app.
+        </p>
+        <button onClick={onAppUpdate}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium w-full justify-center"
+          style={{ background: c.accent, color: '#fff' }}>
+          <RefreshCw size={15} /> Verificar e atualizar
+        </button>
+      </Section>
 
       {/* Theme */}
       <div className="rounded-xl p-5 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
