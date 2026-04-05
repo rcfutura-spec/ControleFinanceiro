@@ -219,7 +219,7 @@ export default function App() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 min-w-0 px-4 sm:px-5 lg:px-8 pt-4 pb-[calc(5rem+var(--safe-bottom))] md:pb-6 md:pt-6 max-w-6xl w-full mx-auto">
+        <main className="flex-1 min-w-0 px-4 sm:px-5 lg:px-8 pt-4 pb-[calc(6rem+var(--safe-bottom))] md:pb-6 md:pt-6 max-w-6xl w-full mx-auto">
           {activeTab === 'dashboard' && (
             <Dashboard transactions={transactions} categories={categories} salary={salary}
               selectedMonth={selectedMonth} months={months} onMonthChange={setSelectedMonth}

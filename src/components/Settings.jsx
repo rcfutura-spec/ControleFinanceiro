@@ -6,7 +6,7 @@ import ThemePicker from './ThemePicker.jsx'
 import Icon from './Icon.jsx'
 import {
   DollarSign, Target, TrendingUp, RefreshCw, Plus, Trash2, Check, X,
-  Download, Upload, FileSpreadsheet, FileText, Database, AlertTriangle,
+  Download, Upload, FileSpreadsheet, FileText, Database,
   BarChart3, Calendar, Tags, Receipt, HardDrive,
 } from 'lucide-react'
 
@@ -133,13 +133,12 @@ function IncomeSection({ incomes, setIncomes, theme }) {
   )
 }
 
-export default function Settings({ salary, setSalary, transactions, categories, onReset, themeId, onThemeChange,
+export default function Settings({ salary, setSalary, transactions, categories, themeId, onThemeChange,
   savingsGoal, setSavingsGoal, recurring, setRecurring, incomes, setIncomes, onAppUpdate }) {
   const theme = useContext(ThemeContext); const c = theme.colors
   const [salaryInput, setSalaryInput] = useState(String(salary))
   const [salaryError, setSalaryError] = useState('')
   const [goalInput, setGoalInput] = useState(String(savingsGoal || ''))
-  const [confirmReset, setConfirmReset] = useState(false)
   const [exportMonth, setExportMonth] = useState('')
   const [backupMsg, setBackupMsg] = useState('')
 
@@ -147,7 +146,6 @@ export default function Settings({ salary, setSalary, transactions, categories, 
 
   const handleSalarySave = () => { const v = validateAmount(salaryInput); if (!v.valid) { setSalaryError(v.error); return }; setSalaryError(''); setSalary(v.value) }
   const handleGoalSave = () => { setSavingsGoal(Math.max(0, parseFloat(goalInput) || 0)) }
-  const handleReset = () => { if (confirmReset) { onReset(); setConfirmReset(false) } else { setConfirmReset(true); setTimeout(() => setConfirmReset(false), 5000) } }
 
   function dl(filename, content, type) { const b = new Blob([content], { type }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; a.click(); URL.revokeObjectURL(u) }
 
@@ -262,14 +260,8 @@ export default function Settings({ salary, setSalary, transactions, categories, 
         </div>
       </Section>
 
-      {/* Reset */}
-      <Section title="Zona de perigo" icon={AlertTriangle} theme={theme} danger>
-        <p className="text-xs mb-4" style={{ color: c.textMuted }}>Apagar todos os dados permanentemente. O tema será mantido.</p>
-        <button onClick={handleReset} className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium border transition-colors"
-          style={{ background: confirmReset ? '#ef4444' : '#ef444410', borderColor: '#ef444430', color: confirmReset ? '#fff' : '#ef4444' }}>
-          <Trash2 size={14} /> {confirmReset ? 'Clique para confirmar' : 'Resetar dados'}
-        </button>
-      </Section>
+      {/* Extra space so nothing hides behind bottom nav */}
+      <div className="h-4" />
     </div>
   )
 }
