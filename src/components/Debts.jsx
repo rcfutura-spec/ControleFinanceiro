@@ -76,98 +76,106 @@ function DebtModal({ debt, onSave, onCancel, theme }) {
   const inputClass = "w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
   const field = (err) => ({ background: c.bg700, borderColor: err ? '#ef4444' : c.bg500, color: c.text })
 
-  return (
-    <div className="fixed inset-0 z-[60] sm:flex sm:items-center sm:justify-center sm:p-6"
-      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }} onClick={onCancel}>
-      <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:max-w-lg sm:rounded-2xl sm:p-6 sm:border overflow-y-auto animate-scale-in"
-        style={{ background: c.bg800, borderColor: c.bg600, color: c.text, paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
-        onClick={e => e.stopPropagation()}>
-        <div className="px-5 pb-8 sm:p-0">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold">{isEdit ? 'Editar dívida' : 'Nova dívida'}</h3>
-          <button onClick={onCancel} className="p-1.5 rounded-lg hover:opacity-70" style={{ color: c.textDim }}><X size={18} /></button>
+  const lbl = "text-xs font-medium mb-1.5 block uppercase tracking-wider"
+  const inp = "w-full rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 border"
+
+  const formFields = (
+    <div className="space-y-4">
+      <div>
+        <label className={lbl} style={{ color: c.textDim }}>Nome da dívida</label>
+        <input type="text" value={form.name} maxLength={100} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+          placeholder="Ex: Celular Samsung, Notebook..." className={inp} style={field(errors.name)} />
+        {errors.name && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.name}</p>}
+      </div>
+      <div>
+        <label className={lbl} style={{ color: c.textDim }}>Descrição (opcional)</label>
+        <input type="text" value={form.description} maxLength={200} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+          placeholder="Detalhes adicionais..." className={inp} style={field()} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Valor total (R$)</label>
+          <input type="number" value={form.totalAmount} min="0" step="0.01" onChange={e => handleTotalChange(e.target.value)}
+            placeholder="0,00" className={inp} style={field(errors.totalAmount)} />
+          {errors.totalAmount && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.totalAmount}</p>}
         </div>
-
-        <div className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Nome da dívida</label>
-            <input type="text" value={form.name} maxLength={100} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              placeholder="Ex: Celular Samsung, Notebook, Empréstimo..." autoFocus
-              className={inputClass} style={field(errors.name)} />
-            {errors.name && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.name}</p>}
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Descrição (opcional)</label>
-            <input type="text" value={form.description} maxLength={200} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              placeholder="Detalhes adicionais..." className={inputClass} style={field()} />
-          </div>
-
-          {/* Total + Installments row */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Valor total (R$)</label>
-              <input type="number" value={form.totalAmount} min="0" step="0.01" onChange={e => handleTotalChange(e.target.value)}
-                placeholder="0,00" className={inputClass} style={field(errors.totalAmount)} />
-              {errors.totalAmount && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.totalAmount}</p>}
-            </div>
-            <div>
-              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Parcelas</label>
-              <input type="number" value={form.installments} min="1" max="360" onChange={e => handleInstallmentsChange(e.target.value)}
-                placeholder="12" className={inputClass} style={field(errors.installments)} />
-              {errors.installments && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.installments}</p>}
-            </div>
-          </div>
-
-          {/* Installment value + Due day */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Valor da parcela (R$)</label>
-              <input type="number" value={form.installmentValue} min="0" step="0.01"
-                onChange={e => setForm(f => ({ ...f, installmentValue: e.target.value }))}
-                placeholder="Calculado automaticamente" className={inputClass} style={field()} />
-              <p className="text-[10px] mt-1" style={{ color: c.textDim }}>Calculado ao preencher total e parcelas</p>
-            </div>
-            <div>
-              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Dia de vencimento</label>
-              <input type="number" value={form.dueDay} min="1" max="31"
-                onChange={e => setForm(f => ({ ...f, dueDay: e.target.value }))}
-                className={inputClass} style={field(errors.dueDay)} />
-              {errors.dueDay && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.dueDay}</p>}
-            </div>
-          </div>
-
-          {/* Start date + Interest */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Data de início</label>
-              <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))}
-                className={inputClass} style={{ ...field(), colorScheme: 'dark' }} />
-            </div>
-            <div>
-              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Juros mensal (%)</label>
-              <input type="number" value={form.interestRate} min="0" step="0.1"
-                onChange={e => setForm(f => ({ ...f, interestRate: e.target.value }))}
-                placeholder="0" className={inputClass} style={field()} />
-              <p className="text-[10px] mt-1" style={{ color: c.textDim }}>0 se não houver juros</p>
-            </div>
-          </div>
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Parcelas</label>
+          <input type="number" value={form.installments} min="1" max="360" onChange={e => handleInstallmentsChange(e.target.value)}
+            placeholder="12" className={inp} style={field(errors.installments)} />
+          {errors.installments && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.installments}</p>}
         </div>
-
-        <div className="flex gap-2 mt-6">
-          <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
-            style={{ background: c.accent, color: '#fff' }}>
-            {isEdit ? <><Pencil size={14} /> Salvar</> : <><Plus size={14} /> Adicionar</>}
-          </button>
-          <button onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm font-medium border"
-            style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>Cancelar</button>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Valor parcela (R$)</label>
+          <input type="number" value={form.installmentValue} min="0" step="0.01"
+            onChange={e => setForm(f => ({ ...f, installmentValue: e.target.value }))}
+            placeholder="Auto" className={inp} style={field()} />
         </div>
-        <div className="h-8 sm:hidden" />
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Dia vencimento</label>
+          <input type="number" value={form.dueDay} min="1" max="31"
+            onChange={e => setForm(f => ({ ...f, dueDay: e.target.value }))}
+            className={inp} style={field(errors.dueDay)} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Data início</label>
+          <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))}
+            className={inp} style={field()} />
+        </div>
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Juros % mês</label>
+          <input type="number" value={form.interestRate} min="0" step="0.1"
+            onChange={e => setForm(f => ({ ...f, interestRate: e.target.value }))}
+            placeholder="0" className={inp} style={field()} />
         </div>
       </div>
     </div>
+  )
+
+  const actionButtons = (mobile) => (
+    <div className={`flex gap-${mobile ? '3' : '2'} mt-${mobile ? '8' : '6'}`}>
+      <button onClick={handleSave} className={`flex-1 flex items-center justify-center gap-2 px-4 py-${mobile ? '3.5' : '2.5'} rounded-xl text-${mobile ? 'base' : 'sm'} font-semibold`}
+        style={{ background: c.accent, color: '#fff' }}>
+        {isEdit ? <><Pencil size={mobile ? 16 : 14} /> Salvar</> : <><Plus size={mobile ? 16 : 14} /> Adicionar</>}
+      </button>
+      <button onClick={onCancel} className={`px-${mobile ? '5' : '4'} py-${mobile ? '3.5' : '2.5'} rounded-xl text-${mobile ? 'base' : 'sm'} font-medium border`}
+        style={{ background: c.bg800, borderColor: c.bg600, color: c.textMuted }}>Cancelar</button>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Mobile fullscreen */}
+      <div className="fixed inset-0 z-[60] overflow-y-auto sm:hidden" style={{ background: c.bg900, color: c.text }}>
+        <div className="px-5 pt-4 pb-10" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold">{isEdit ? 'Editar dívida' : 'Nova dívida'}</h3>
+            <button onClick={onCancel} className="p-2 rounded-xl" style={{ background: c.bg700, color: c.textMuted }}><X size={20} /></button>
+          </div>
+          {formFields}
+          {actionButtons(true)}
+        </div>
+      </div>
+
+      {/* Desktop modal */}
+      <div className="fixed inset-0 z-[60] hidden sm:flex items-center justify-center p-6"
+        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }} onClick={onCancel}>
+        <div className="w-full max-w-lg rounded-2xl p-6 border animate-scale-in overflow-y-auto max-h-[90vh]"
+          style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}
+          onClick={e => e.stopPropagation()}>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-base font-bold">{isEdit ? 'Editar dívida' : 'Nova dívida'}</h3>
+            <button onClick={onCancel} className="p-1.5 rounded-lg" style={{ color: c.textDim }}><X size={18} /></button>
+          </div>
+          {formFields}
+          {actionButtons(false)}
+        </div>
+      </div>
+    </>
   )
 }
 
@@ -194,54 +202,75 @@ function PaymentModal({ debt, onSave, onCancel, theme }) {
     })
   }
 
-  const inputClass = "w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+  const inp = "w-full rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 border"
+  const lbl = "text-xs font-medium mb-1.5 block uppercase tracking-wider"
   const field = (err) => ({ background: c.bg700, borderColor: err ? '#ef4444' : c.bg500, color: c.text })
 
-  return (
-    <div className="fixed inset-0 z-[60] sm:flex sm:items-center sm:justify-center sm:p-6"
-      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }} onClick={onCancel}>
-      <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:max-w-sm sm:rounded-2xl sm:p-5 sm:border overflow-y-auto animate-scale-in"
-        style={{ background: c.bg800, borderColor: c.bg600, color: c.text, paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
-        onClick={e => e.stopPropagation()}>
-        <div className="px-5 pb-8 sm:p-0">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold">Registrar pagamento</h3>
-          <button onClick={onCancel} className="p-1.5 rounded-lg" style={{ color: c.textDim }}><X size={16} /></button>
+  const formContent = (
+    <>
+      <p className="text-sm mb-5" style={{ color: c.textMuted }}>
+        {debt.name} — Parcela: <span className="font-semibold" style={{ color: c.accent }}>{formatCurrency(debt.installmentValue)}</span>
+      </p>
+      <div className="space-y-4">
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Valor pago (R$)</label>
+          <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+            className={inp} style={field(error)} />
+          {error && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{error}</p>}
         </div>
-
-        <p className="text-xs mb-4" style={{ color: c.textMuted }}>
-          {debt.name} — Parcela sugerida: <span className="font-semibold" style={{ color: c.accent }}>{formatCurrency(debt.installmentValue)}</span>
-        </p>
-
-        <div className="space-y-3">
-          <div>
-            <label className="text-[11px] font-medium mb-1 block uppercase tracking-wider" style={{ color: c.textDim }}>Valor pago (R$)</label>
-            <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-              className={inputClass} style={field(error)} autoFocus />
-            {error && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{error}</p>}
-          </div>
-          <div>
-            <label className="text-[11px] font-medium mb-1 block uppercase tracking-wider" style={{ color: c.textDim }}>Data</label>
-            <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-              className={inputClass} style={{ ...field(), colorScheme: 'dark' }} />
-          </div>
-          <div>
-            <label className="text-[11px] font-medium mb-1 block uppercase tracking-wider" style={{ color: c.textDim }}>Observação (opcional)</label>
-            <input type="text" value={form.note} maxLength={100} onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
-              placeholder="Ex: Paguei adiantado, parcela com desconto..." className={inputClass} style={field()} />
-          </div>
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Data</label>
+          <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+            className={inp} style={field()} />
         </div>
-
-        <div className="flex gap-2 mt-5">
-          <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
-            style={{ background: '#22c55e', color: '#fff' }}>
-            <Check size={14} /> Confirmar pagamento
-          </button>
-        </div>
-        <div className="h-8 sm:hidden" />
+        <div>
+          <label className={lbl} style={{ color: c.textDim }}>Observação (opcional)</label>
+          <input type="text" value={form.note} maxLength={100} onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
+            placeholder="Ex: Paguei adiantado..." className={inp} style={field()} />
         </div>
       </div>
-    </div>
+    </>
+  )
+
+  return (
+    <>
+      {/* Mobile fullscreen */}
+      <div className="fixed inset-0 z-[60] overflow-y-auto sm:hidden" style={{ background: c.bg900, color: c.text }}>
+        <div className="px-5 pt-4 pb-10" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold">Registrar pagamento</h3>
+            <button onClick={onCancel} className="p-2 rounded-xl" style={{ background: c.bg700, color: c.textMuted }}><X size={20} /></button>
+          </div>
+          {formContent}
+          <div className="flex gap-3 mt-8">
+            <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-base font-semibold"
+              style={{ background: '#22c55e', color: '#fff' }}>
+              <Check size={16} /> Confirmar pagamento
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop modal */}
+      <div className="fixed inset-0 z-[60] hidden sm:flex items-center justify-center p-6"
+        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }} onClick={onCancel}>
+        <div className="w-full max-w-sm rounded-2xl p-5 border animate-scale-in"
+          style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}
+          onClick={e => e.stopPropagation()}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold">Registrar pagamento</h3>
+            <button onClick={onCancel} className="p-1.5 rounded-lg" style={{ color: c.textDim }}><X size={16} /></button>
+          </div>
+          {formContent}
+          <div className="mt-5">
+            <button onClick={handleSave} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+              style={{ background: '#22c55e', color: '#fff' }}>
+              <Check size={14} /> Confirmar pagamento
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 

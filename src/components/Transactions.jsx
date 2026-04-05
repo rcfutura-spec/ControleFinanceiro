@@ -33,95 +33,129 @@ function TransactionModal({ tx, categories, onSave, onCancel, theme }) {
 
   const field = (err) => ({ background: c.bg700, borderColor: err ? '#ef4444' : c.bg500, color: c.text })
 
-  const overlayStyle = {
-    background: 'rgba(0,0,0,0.65)',
-    backdropFilter: 'blur(6px)',
-    WebkitBackdropFilter: 'blur(6px)',
-  }
-
-  const cardStyle = {
-    background: c.bg800,
-    borderColor: c.bg600,
-    color: c.text,
-    boxShadow: `0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px ${c.bg600}`,
-  }
-
-  const inputClass = "w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+  const inputClass = "w-full rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 border"
+  const modalBg = { background: c.bg900, color: c.text }
 
   return (
-    <div className="fixed inset-0 z-[60] sm:flex sm:items-center sm:justify-center sm:p-6" style={overlayStyle} onClick={onCancel}>
-      <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:max-w-lg sm:rounded-2xl sm:p-6 sm:border overflow-y-auto animate-scale-in"
-        style={{ ...cardStyle, paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
-        onClick={e => e.stopPropagation()}>
-        <div className="px-5 pb-8 sm:p-0">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold" style={{ color: c.text }}>{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
-          <button onClick={onCancel} className="p-1.5 rounded-lg hover:opacity-70 transition-opacity" style={{ color: c.textDim }}><X size={18} /></button>
-        </div>
-        <div className="space-y-4">
-          {/* Type toggle */}
-          <div className="flex gap-2">
-            {[{ id: 'expense', label: 'Despesa', icon: ArrowDownRight, color: '#ef4444' }, { id: 'income', label: 'Receita', icon: ArrowUpRight, color: '#22c55e' }].map(t => {
-              const TIcon = t.icon; const active = form.type === t.id
-              return (
-                <button key={t.id} onClick={() => setForm(f => ({ ...f, type: t.id }))}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium border transition-all"
-                  style={{ background: active ? t.color + '15' : c.bg700, borderColor: active ? t.color + '50' : c.bg500, color: active ? t.color : c.textMuted }}>
-                  <TIcon size={16} /> {t.label}
-                </button>
-              )
-            })}
+    <>
+      {/* Mobile: fullscreen page */}
+      <div className="fixed inset-0 z-[60] overflow-y-auto sm:hidden" style={modalBg}>
+        <div className="px-5 pt-4 pb-10" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold">{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
+            <button onClick={onCancel} className="p-2 rounded-xl" style={{ background: c.bg700, color: c.textMuted }}><X size={20} /></button>
           </div>
 
-          {/* Date */}
-          <div>
-            <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Data</label>
-            <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-              className={inputClass} style={{ ...field(errors.date), colorScheme: 'dark' }} />
-            {errors.date && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.date}</p>}
+          <div className="space-y-5">
+            <div className="flex gap-2">
+              {[{ id: 'expense', label: 'Despesa', icon: ArrowDownRight, color: '#ef4444' }, { id: 'income', label: 'Receita', icon: ArrowUpRight, color: '#22c55e' }].map(t => {
+                const TIcon = t.icon; const active = form.type === t.id
+                return (
+                  <button key={t.id} onClick={() => setForm(f => ({ ...f, type: t.id }))}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-semibold border"
+                    style={{ background: active ? t.color + '15' : c.bg800, borderColor: active ? t.color + '50' : c.bg600, color: active ? t.color : c.textMuted }}>
+                    <TIcon size={18} /> {t.label}
+                  </button>
+                )
+              })}
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Data</label>
+              <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+                className={inputClass} style={field(errors.date)} />
+              {errors.date && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.date}</p>}
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Descrição</label>
+              <input type="text" value={form.description} maxLength={200} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                placeholder="Ex: Supermercado, Uber, Netflix..."
+                className={inputClass} style={field(errors.description)} />
+              {errors.description && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.description}</p>}
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Valor (R$)</label>
+              <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+                placeholder="0,00" className={inputClass} style={field(errors.amount)} />
+              {errors.amount && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{errors.amount}</p>}
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Categoria</label>
+              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                className={inputClass} style={{ background: c.bg700, borderColor: c.bg500, color: c.text }}>
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+              </select>
+            </div>
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Descrição</label>
-            <input type="text" value={form.description} maxLength={200} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              placeholder="Ex: Supermercado, Uber, Netflix..." autoFocus
-              className={inputClass} style={field(errors.description)} />
-            {errors.description && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.description}</p>}
+          <div className="flex gap-3 mt-8">
+            <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-base font-semibold"
+              style={{ background: c.accent, color: '#fff' }}>
+              {isEdit ? <><Pencil size={16} /> Salvar</> : <><Plus size={16} /> Adicionar</>}
+            </button>
+            <button onClick={onCancel} className="px-5 py-3.5 rounded-xl text-base font-medium border"
+              style={{ background: c.bg800, borderColor: c.bg600, color: c.textMuted }}>Cancelar</button>
           </div>
-
-          {/* Amount */}
-          <div>
-            <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Valor (R$)</label>
-            <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
-              placeholder="0,00" className={inputClass} style={field(errors.amount)} />
-            {errors.amount && <p className="text-[11px] mt-1" style={{ color: '#ef4444' }}>{errors.amount}</p>}
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Categoria</label>
-            <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-              className={inputClass} style={{ background: c.bg700, borderColor: c.bg500, color: c.text }}>
-              {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 mt-6">
-          <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-            style={{ background: c.accent, color: '#fff' }}>
-            {isEdit ? <><Pencil size={14} /> Salvar</> : <><Plus size={14} /> Adicionar</>}
-          </button>
-          <button onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm font-medium border transition-colors"
-            style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>Cancelar</button>
-        </div>
-        {/* Extra padding for mobile keyboard */}
-        <div className="h-8 sm:hidden" />
         </div>
       </div>
-    </div>
+
+      {/* Desktop: centered modal */}
+      <div className="fixed inset-0 z-[60] hidden sm:flex items-center justify-center p-6"
+        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }} onClick={onCancel}>
+        <div className="w-full max-w-lg rounded-2xl p-6 border animate-scale-in"
+          style={{ background: c.bg800, borderColor: c.bg600, color: c.text, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}
+          onClick={e => e.stopPropagation()}>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-base font-bold">{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
+            <button onClick={onCancel} className="p-1.5 rounded-lg" style={{ color: c.textDim }}><X size={18} /></button>
+          </div>
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              {[{ id: 'expense', label: 'Despesa', icon: ArrowDownRight, color: '#ef4444' }, { id: 'income', label: 'Receita', icon: ArrowUpRight, color: '#22c55e' }].map(t => {
+                const TIcon = t.icon; const active = form.type === t.id
+                return (
+                  <button key={t.id} onClick={() => setForm(f => ({ ...f, type: t.id }))}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium border"
+                    style={{ background: active ? t.color + '15' : c.bg700, borderColor: active ? t.color + '50' : c.bg500, color: active ? t.color : c.textMuted }}>
+                    <TIcon size={16} /> {t.label}
+                  </button>
+                )
+              })}
+            </div>
+            <div>
+              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Data</label>
+              <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+                className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 border" style={field(errors.date)} />
+            </div>
+            <div>
+              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Descrição</label>
+              <input type="text" value={form.description} maxLength={200} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                placeholder="Ex: Supermercado, Uber, Netflix..." autoFocus
+                className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 border" style={field(errors.description)} />
+            </div>
+            <div>
+              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Valor (R$)</label>
+              <input type="number" value={form.amount} min="0" step="0.01" onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
+                placeholder="0,00" className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 border" style={field(errors.amount)} />
+            </div>
+            <div>
+              <label className="text-[11px] font-medium mb-1.5 block uppercase tracking-wider" style={{ color: c.textDim }}>Categoria</label>
+              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                className="w-full rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 border" style={{ background: c.bg700, borderColor: c.bg500, color: c.text }}>
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-6">
+            <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+              style={{ background: c.accent, color: '#fff' }}>
+              {isEdit ? <><Pencil size={14} /> Salvar</> : <><Plus size={14} /> Adicionar</>}
+            </button>
+            <button onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm font-medium border"
+              style={{ background: c.bg700, borderColor: c.bg500, color: c.textMuted }}>Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
