@@ -210,23 +210,23 @@ export default function Dashboard({ transactions, categories, salary, selectedMo
       )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'Renda', value: formatCurrency(totalIncome), icon: Wallet, color: c.accent, sub: monthIncome > 0 ? `+${formatCurrency(monthIncome)} extra` : null },
-          { label: 'Gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: `${monthTx.length} transações` },
+          { label: 'Renda', value: formatCurrency(totalIncome), icon: Wallet, color: c.accent, sub: monthIncome > 0 ? `+extra` : null },
+          { label: 'Gasto', value: formatCurrency(totalSpent), icon: ArrowDownRight, color: '#ef4444', sub: `${monthTx.length} trans.` },
           { label: 'Saldo', value: formatCurrency(remaining), icon: remaining >= 0 ? ArrowUpRight : ArrowDownRight, color: remaining >= 0 ? '#22c55e' : '#ef4444', sub: null },
         ].map((card, i) => {
           const CardIcon = card.icon
           return (
-            <div key={i} className="rounded-xl p-4 border" style={{ background: c.bg800, borderColor: c.bg600 }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: c.textDim }}>{card.label}</span>
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: card.color + '15' }}>
-                  <CardIcon size={14} style={{ color: card.color }} />
+            <div key={i} className="rounded-xl p-3 border overflow-hidden" style={{ background: c.bg800, borderColor: c.bg600 }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.textDim }}>{card.label}</span>
+                <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: card.color + '15' }}>
+                  <CardIcon size={12} style={{ color: card.color }} />
                 </div>
               </div>
-              <p className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: card.color }}>{card.value}</p>
-              {card.sub && <p className="text-[11px] mt-1" style={{ color: c.textDim }}>{card.sub}</p>}
+              <p className="text-sm font-bold tracking-tight truncate tabular-nums" style={{ color: card.color }}>{card.value}</p>
+              {card.sub && <p className="text-[10px] mt-0.5 truncate" style={{ color: c.textDim }}>{card.sub}</p>}
             </div>
           )
         })}

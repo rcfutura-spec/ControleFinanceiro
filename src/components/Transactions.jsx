@@ -95,7 +95,7 @@ function TransactionModal({ tx, categories, onSave, onCancel, theme }) {
       background: c.bg900, color: c.text,
       overflowY: 'auto', WebkitOverflowScrolling: 'touch',
     }}>
-      <div style={{ padding: '16px 20px 40px', paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
+      <div style={{ padding: '16px 20px', paddingTop: 'max(16px, env(safe-area-inset-top))', paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
           <h3 style={{ fontSize: 20, fontWeight: 700 }}>{isEdit ? 'Editar transação' : 'Nova transação'}</h3>
